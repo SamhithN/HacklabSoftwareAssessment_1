@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Traffic Light Demo</title>
+  </head>
+  <body>
+    <h1>Traffic Light Demo</h1>
+    <p>Current state: <span id="state"></span></p>
+    <button id="red" onclick="set_state('red')">Red</button>
+    <button id="green" onclick="set_state('green')">Green</button>
+    <button id="yellow" onclick="set_state('yellow')">Yellow</button>
+    <script>
+      var state_element = document.getElementById("state");
+      var red_button = document.getElementById("red");
+      var green_button = document.getElementById("green");
+      var yellow_button = document.getElementById("yellow");
+      var fsm = new TrafficLightFSM();
+      
+      function set_state(state) {
+        fsm.state = state;
+        update_state_display();
+      }
+      
+      function update_state_display() {
+        var state = fsm.get_state();
+        state_element.innerHTML = state;
+        red_button.style.backgroundColor = "black";
+        green_button.style.backgroundColor = "black";
+        yellow_button.style.backgroundColor = "black";
+        if (state == "red") {
+          red_button.style.backgroundColor = "red";
+        } else if (state == "green") {
+          green_button.style.backgroundColor = "green";
+        } else if (state == "yellow") {
+          yellow_button.style.backgroundColor = "yellow";
+        }
+      }
+      
+      setInterval(function() {
+        fsm.update_state();
+        update_state_display();
+      }, 1000);
+    </script>
+  </body>
+</html>
+
+
+
+/python code/
+
+import time
+
+class TrafficLightFSM:
+    def _init_(self):
+        self.state = 'red'
+        self.last_transition_time = time.time()
+    
+    def update_state(self):
+        current_time = time.time()
+        elapsed_time = current_time - self.last_transition_time
+        if self.state == 'green' and elapsed_time >= 15:
+            self.state = 'yellow'
+            self.last_transition_time = current_time
+        elif self.state == 'yellow' and elapsed_time >= 5:
+            self.state = 'red'
+            self.last_transition_time = current_time
+        elif self.state == 'red' and elapsed_time >= 20:
+            self.state = 'green'
+            self.last_transition_time = current_time
+    
+    def get_state(self):
+        return self.state
